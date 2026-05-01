@@ -1,9 +1,7 @@
 .DS_Store
 
-# Local symlinks pointing into $HOME — non-portable
-gitconfig_sl
-zshrc_sl
-zprofile_sl
+# Contains [user] name/email — scrub into ~/.gitconfig.local before tracking
+gitconfig
 
 # Machine-local overrides
 *.local
