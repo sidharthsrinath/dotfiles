@@ -64,6 +64,48 @@
 # worktree's alias (if any) in brackets.
 
 nb() {
+  if [ "$1" = "--help" ] || [ "$1" = "-h" ]; then
+    cat <<'EOF'
+nb — navigate, open, and run an Xcode project across git worktrees.
+
+Usage:
+  nb [<worktree>]                     Navigate to <worktree> (or main if omitted).
+  nb nav [<worktree>]                 Same as above; explicit form.
+  nb open [<worktree>]                Open the Xcode project in Xcode. With no
+                                      arg, defaults to the worktree you're
+                                      currently inside (else main).
+  nb run [physical|sim] [<worktree>]  Build the iOS app from <worktree>/ios and
+                                      run it. Default mode is `sim`.
+  nb run [physical|sim] --current {logs|stop|record [<output>]}
+                                      Operate on the currently running app
+                                      (no build). Default mode is `sim`.
+                                        logs    sim: stream unified-log output;
+                                                physical: prints CLI options.
+                                        stop    terminate the running app.
+                                        record  sim only; default output is
+                                                $NB_RECORD_DIR/<project>-<ts>.mp4.
+  nb add <alias> <worktree-path>      Create/replace an alias for a worktree.
+  nb remove <alias>                   Delete an alias.
+  nb --help, -h                       Show this help.
+
+Any top-level arg that isn't a known subcommand is treated as `nav <worktree>`.
+Aliases are persisted in ~/.nb_aliases as tab-separated pairs.
+
+Environment:
+  Required:
+    NB_PROJECT             Project name (matches <NB_PROJECT>.xcodeproj and scheme).
+    NB_ROOT                Absolute path to the main worktree.
+
+  Optional (used by `nb run` flows):
+    NB_BUNDLE_ID           App bundle id (used by `nb run --current` actions).
+    NB_SIM_DEVICE_ID       UDID of an iOS Simulator (used by `nb run [sim]`).
+    NB_PHYSICAL_DEVICE_ID  UDID of a paired physical device.
+    NB_RECORD_DIR          Default output directory for screen recordings
+                           (defaults to ~/Documents/Pictures/Screenshots).
+EOF
+    return 0
+  fi
+
   local project="${NB_PROJECT:-}"
   if [ -z "$project" ]; then
     echo "nb: NB_PROJECT is not set. Define it (and NB_ROOT) in private-commands.sh." >&2
@@ -276,7 +318,7 @@ for p in result.get("runningProcesses", []):
   local requested_worktree=""
 
   if [ $# -gt 1 ]; then
-    echo "Usage: nb [open|nav] [<worktree>]  |  nb run [physical|sim] [<worktree>]  |  nb add <alias> <worktree-path>  |  nb remove <alias>"
+    echo "Usage: nb [open|nav] [<worktree>]  |  nb run [physical|sim] [<worktree>]  |  nb add <alias> <worktree-path>  |  nb remove <alias>  (see: nb --help)"
     return 1
   fi
 
@@ -285,15 +327,28 @@ for p in result.get("runningProcesses", []):
     shift
   fi
 
-  # `nb open|run` with no arg defaults to the worktree we're currently inside.
+  # `nb open|run` with no arg defaults to the worktree we're currently inside,
+  # provided it's a registered worktree of NB_ROOT's repo (so sibling-path
+  # worktrees like `git worktree add ../feature` work too).
   if { [ "$action" = "open" ] || [ "$action" = "run" ]; } && [ -z "$requested_worktree" ]; then
     local cwd_toplevel
     cwd_toplevel="$(git rev-parse --show-toplevel 2>/dev/null)"
-    if [ -n "$cwd_toplevel" ] && [[ "$cwd_toplevel" == "$root"* ]]; then
-      target="$cwd_toplevel"
-      local _cwd_base
-      _cwd_base="$(basename "$cwd_toplevel")"
-      [ "$_cwd_base" != "$project" ] && worktree="$_cwd_base"
+    if [ -n "$cwd_toplevel" ]; then
+      local _wt_line _wt_path
+      while IFS= read -r _wt_line; do
+        case "$_wt_line" in
+          "worktree "*)
+            _wt_path="${_wt_line#worktree }"
+            if [ "$_wt_path" = "$cwd_toplevel" ]; then
+              target="$cwd_toplevel"
+              local _cwd_base
+              _cwd_base="$(basename "$cwd_toplevel")"
+              [ "$_cwd_base" != "$project" ] && worktree="$_cwd_base"
+              break
+            fi
+            ;;
+        esac
+      done < <(git -C "$root" worktree list --porcelain 2>/dev/null)
     fi
   fi
 
@@ -590,7 +645,7 @@ if pid is not None:
       fi
       ;;
     *)
-      echo "Usage: nb [open|nav] [<worktree>]  |  nb run [physical|sim] [<worktree>]  |  nb add <alias> <worktree-path>  |  nb remove <alias>"
+      echo "Usage: nb [open|nav] [<worktree>]  |  nb run [physical|sim] [<worktree>]  |  nb add <alias> <worktree-path>  |  nb remove <alias>  (see: nb --help)"
       return 1
       ;;
   esac
