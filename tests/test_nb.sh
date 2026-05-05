@@ -195,6 +195,27 @@ test_run_physical_current_record_unsupported() {
   assert_contains "QuickTime" "$out" "suggests QuickTime"
 }
 
+test_help_flag_prints_usage_without_env() {
+  # --help should work even without NB_PROJECT/NB_ROOT set, and list the
+  # main subcommands so users can discover them.
+  local out rc
+  out="$(nb --help 2>&1)"; rc=$?
+  assert_eq 0 "$rc" "exit code"
+  assert_contains "Usage:" "$out" "shows usage header"
+  assert_contains "nb nav" "$out" "lists nav"
+  assert_contains "nb open" "$out" "lists open"
+  assert_contains "nb run" "$out" "lists run"
+  assert_contains "nb add" "$out" "lists add"
+  assert_contains "nb remove" "$out" "lists remove"
+}
+
+test_help_short_flag_prints_usage() {
+  local out rc
+  out="$(nb -h 2>&1)"; rc=$?
+  assert_eq 0 "$rc" "exit code"
+  assert_contains "Usage:" "$out" "shows usage header"
+}
+
 test_unknown_top_level_arg_treated_as_nav() {
   # `nb foo` with no foo worktree should fall through to nav and complain.
   # The function tries to resolve `foo` as a worktree; since NB_ROOT isn't a
@@ -223,6 +244,8 @@ tests=(
   test_run_physical_current_needs_device_id
   test_run_physical_current_logs_prints_options
   test_run_physical_current_record_unsupported
+  test_help_flag_prints_usage_without_env
+  test_help_short_flag_prints_usage
   test_unknown_top_level_arg_treated_as_nav
 )
 
