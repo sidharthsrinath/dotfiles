@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+#
+# tmux-nb — open (or attach to) the "nb" tmux session with four
+# pre-laid-out windows, one per worktree.
+#
+# Each window uses Layout 1 from ~/.tmux.conf: a vertical split with
+# the bottom pane at 60% height, focused on the top pane.
+#
+# To customize, edit the WINDOWS array below. Format is "Name:/abs/path".
+# Paths are typically siblings of $NB_ROOT (see ~/dotfiles/nb.sh).
+
+set -euo pipefail
+
+SESSION="nb"
+
+WINDOWS=(
+  "Feature:~/Documents/NB/Notability-Feature"
+  "Review:~/Documents/NB/Notability-Review"
+  "Main:~/Documents/NB/Notability"
+  "Personal:~"
+)
+
+attach() {
+  if [[ -n "${TMUX:-}" ]]; then
+    exec tmux switch-client -t "$SESSION"
+  else
+    exec tmux attach -t "$SESSION"
+  fi
+}
+
+if tmux has-session -t="$SESSION" 2>/dev/null; then
+  attach
+fi
+
+first=1
+for entry in "${WINDOWS[@]}"; do
+  name="${entry%%:*}"
+  path="${entry#*:}"
+  path="${path/#\~/$HOME}"
+
+  if [[ ! -d "$path" ]]; then
+    echo "tmux-nb: '$name' window points at missing path: $path" >&2
+    exit 1
+  fi
+
+  if (( first )); then
+    tmux new-session -d -s "$SESSION" -n "$name" -c "$path"
+    first=0
+  else
+    tmux new-window -t "$SESSION:" -n "$name" -c "$path"
+  fi
+
+  tmux split-window -t "$SESSION:$name" -v -p 60 -c "$path"
+  tmux select-pane  -t "$SESSION:$name.1"
+done
+
+tmux select-window -t "$SESSION:1"
+attach
