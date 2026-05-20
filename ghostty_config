@@ -73,3 +73,6 @@ keybind = cmd+s>e=equalize_splits
 
 # other
 copy-on-select = clipboard
+
+# Send a distinct sequence for Shift+Enter so apps (e.g. Claude Code) can treat it as newline.
+keybind = shift+enter=text:\n

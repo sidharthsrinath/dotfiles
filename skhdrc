@@ -2,5 +2,5 @@ cmd + ctrl - 4 : open ~/Documents/Pictures/Screenshots
 cmd + ctrl - b : open -a "Safari"
 cmd + ctrl - n : open -a "Notion"
 cmd + ctrl - s : open -a "Slack"
-cmd + ctrl - t : open -a "cmux"
+cmd + ctrl - t : open -a "Ghostty"
 cmd + ctrl - x : open -b com.apple.dt.Xcode

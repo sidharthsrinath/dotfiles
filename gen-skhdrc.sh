@@ -10,7 +10,7 @@ typeset -A apps=(
   b 'open -a "Safari"'
   s 'open -a "Slack"'
   x 'open -b com.apple.dt.Xcode'
-  t 'open -a "cmux"'
+  t 'open -a "Ghostty"'
   n 'open -a "Notion"'
   4 'open ~/Documents/Pictures/Screenshots'
 )
