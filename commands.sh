@@ -18,6 +18,9 @@ docs() { cd ~/Documents }
 # Navigate to dotfiles folder
 dotfiles() { cd ~/dotfiles }
 
+# Reload tmux config
+reload-tmux() { tmux source-file ~/.tmux.conf && echo "Reloaded tmux config" }
+
 # Private custom commands
 source ~/dotfiles/private-commands.sh
 

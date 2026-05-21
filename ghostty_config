@@ -3,7 +3,7 @@
 # theme = GruvboxDarkHard
 
 ## Shell
-shell-integration-features = no-cursor,sudo,no-title
+shell-integration-features = no-cursor,no-sudo,no-title
 cursor-style = block
 adjust-cell-height = 35%
 
@@ -76,3 +76,6 @@ copy-on-select = clipboard
 
 # Send a distinct sequence for Shift+Enter so apps (e.g. Claude Code) can treat it as newline.
 keybind = shift+enter=text:\n
+
+# Send a distinct CSI-u sequence for Shift+Space so tmux can use it as a prefix.
+keybind = shift+space=text:\x1b[32;2u
