@@ -3,7 +3,7 @@
 
 set -euo pipefail
 
-trigger="shift + cmd"
+trigger="ctrl + cmd"
 
 typeset -A apps=(
   b 'open -a "Safari"'

@@ -5,3 +5,6 @@
 eval "$(/opt/homebrew/bin/brew shellenv)"
 # Added by Obsidian
 export PATH="$PATH:/Applications/Obsidian.app/Contents/MacOS"
+
+# Created by `pipx` on 2026-05-27 23:32:17
+export PATH="$PATH:/Users/sidharth/.local/bin"

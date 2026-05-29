@@ -22,3 +22,8 @@ export SDKMAN_DIR="$HOME/.sdkman"
 export PATH="$HOME/dotfiles/tmux:$PATH"
 export PATH="/opt/homebrew/opt/zig@0.15/bin:$PATH"
 eval "$(rbenv init - zsh)"
+
+
+[ -f "/Users/sidharth/.ghcup/env" ] && . "/Users/sidharth/.ghcup/env" # ghcup-env
+# Created by `pipx` on 2026-05-27 23:32:17
+export PATH="$PATH:/Users/sidharth/.local/bin"
