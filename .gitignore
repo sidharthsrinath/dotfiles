@@ -1,8 +1,5 @@
 .DS_Store
 
-# Contains [user] name/email — scrub into ~/.gitconfig.local before tracking
-gitconfig
-
 # Machine-local overrides
 *.local
 private-commands.sh

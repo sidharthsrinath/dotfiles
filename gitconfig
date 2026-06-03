@@ -1,0 +1,26 @@
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
+[alias]
+	# tells safari to open pr link in current window/tab group since safari opens "open" links in new window
+    pr = "!f() { URL=\"https://github.com/$(echo $(git remote get-url origin) | cut -f2 -d\":\" | cut -f1 -d\".\")/pull/new/$(git rev-parse --abbrev-ref HEAD)\"; osascript -e 'tell application \"Safari\" to activate' -e 'delay 0.1' -e 'tell application \"System Events\" to tell process \"Safari\" to set frontmost to true' -e 'tell application \"Safari\" to tell window 1 to set URL of (make new tab) to \"'"$URL"'\"' -e 'tell application \"Safari\" to tell window 1 to set current tab to last tab'; }; f"
+
+    br = "!f() { URL=\"https://github.com/$(echo $(git remote get-url origin) | cut -f2 -d\":\" | cut -f1 -d\".\")/tree/$(git rev-parse --abbrev-ref HEAD)\"; osascript -e 'tell application \"Safari\" to activate' -e 'delay 0.1' -e 'tell application \"System Events\" to tell process \"Safari\" to set frontmost to true' -e 'tell application \"Safari\" to tell window 1 to set URL of (make new tab) to \"'"$URL"'\"' -e 'tell application \"Safari\" to tell window 1 to set current tab to last tab'; }; f"
+
+	pst = "push -u origin HEAD"
+[difftool "sourcetree"]
+	cmd = opendiff \"$LOCAL\" \"$REMOTE\"
+	path = 
+[mergetool "sourcetree"]
+	cmd = /Applications/Sourcetree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
+	trustExitCode = true
+# Identity, excludesfile, and commit template live in ~/.gitconfig.local
+# (untracked, per-machine). Drop that file on a new machine to bootstrap.
+[include]
+    path = ~/.gitconfig.local
+[include]
+    # path = ~/dotfiles/delta.gitconfig
+[init]
+	defaultBranch = staging
