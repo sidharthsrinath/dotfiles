@@ -30,7 +30,7 @@
 #                                   behaves like `open`. `sim` (default) requires
 #                                   NB_SIM_DEVICE_ID; `physical` requires
 #                                   NB_PHYSICAL_DEVICE_ID.
-#   nb run [physical|sim] --current {logs|stop|record [<output>]}
+#   nb run [physical|sim] --current {logs|stop|attach|record [<output>]}
 #                                   Operate on the currently running app
 #                                   (no build). Default mode is `sim`.
 #                                     logs    sim: stream unified-log output for
@@ -40,6 +40,8 @@
 #                                     stop    terminate the running app
 #                                             (sim: simctl terminate; physical:
 #                                             devicectl process terminate).
+#                                     attach  resolve the running app's PID and
+#                                             attach lldb to it (xcrun lldb -p).
 #                                     record  sim: record screen video; default
 #                                             output is $NB_RECORD_DIR/<project>-<ts>.mp4.
 #                                             physical: not supported (xcrun has
@@ -76,12 +78,14 @@ Usage:
                                       currently inside (else main).
   nb run [physical|sim] [<worktree>]  Build the iOS app from <worktree>/ios and
                                       run it. Default mode is `sim`.
-  nb run [physical|sim] --current {logs|stop|record [<output>]}
+  nb run [physical|sim] --current {logs|stop|attach|record [<output>]}
                                       Operate on the currently running app
                                       (no build). Default mode is `sim`.
                                         logs    sim: stream unified-log output;
                                                 physical: prints CLI options.
                                         stop    terminate the running app.
+                                        attach  attach lldb to the running app
+                                                by PID (xcrun lldb -p).
                                         record  sim only; default output is
                                                 $NB_RECORD_DIR/<project>-<ts>.mp4.
   nb add <alias> <worktree-path>      Create/replace an alias for a worktree.
@@ -243,8 +247,8 @@ EOF
           echo "      brew install libimobiledevice && idevicesyslog -u $device_id | grep -i $project"
           return 1
           ;;
-        stop)
-          # Look up the PID of the running app via devicectl, then terminate.
+        stop|attach)
+          # Look up the PID of the running app via devicectl, then act on it.
           local pid
           pid="$(xcrun devicectl device info processes --device "$device_id" --json-output - 2>/dev/null | \
             NB_PROJ="$project" NB_BUNDLE="$bundle_id" python3 -c '
@@ -268,8 +272,13 @@ for p in result.get("runningProcesses", []):
             echo "No running $project process found on physical device $device_id"
             return 1
           fi
-          echo "Terminating $project (PID $pid) on physical device"
-          xcrun devicectl device process terminate --device "$device_id" --pid "$pid"
+          if [ "$sub" = "attach" ]; then
+            echo "Attaching lldb to $project (PID $pid) on physical device"
+            xcrun lldb -p "$pid"
+          else
+            echo "Terminating $project (PID $pid) on physical device"
+            xcrun devicectl device process terminate --device "$device_id" --pid "$pid"
+          fi
           ;;
         record)
           echo "Screen recording isn't available via xcrun for physical devices."
@@ -278,7 +287,7 @@ for p in result.get("runningProcesses", []):
           return 1
           ;;
         ""|*)
-          echo "Usage: nb run physical --current {logs|stop}"
+          echo "Usage: nb run physical --current {logs|stop|attach}"
           return 1
           ;;
       esac
@@ -294,6 +303,21 @@ for p in result.get("runningProcesses", []):
         echo "Terminating $bundle_id on booted simulator"
         xcrun simctl terminate booted "$bundle_id"
         ;;
+      attach)
+        # Sim processes are regular host processes — resolve the PID from the
+        # booted device's launchctl table (the bundle id shows up in the
+        # UIKitApplication:<bundle>[...] service label) and attach lldb by PID.
+        local pid
+        pid="$(xcrun simctl spawn booted launchctl list 2>/dev/null | \
+          grep -F "$bundle_id" | awk '$1 ~ /^[0-9]+$/ { print $1; exit }')"
+        if [ -z "$pid" ]; then
+          echo "No running $bundle_id process found on booted simulator"
+          echo "(launch it first with: nb run sim <worktree>)"
+          return 1
+        fi
+        echo "Attaching lldb to $bundle_id (PID $pid) on booted simulator"
+        xcrun lldb -p "$pid"
+        ;;
       record)
         local out="${1:-}"
         if [ -z "$out" ]; then
@@ -306,7 +330,7 @@ for p in result.get("runningProcesses", []):
         xcrun simctl io booted recordVideo "$out"
         ;;
       ""|*)
-        echo "Usage: nb run [sim] --current {logs|stop|record [<output>]}"
+        echo "Usage: nb run [sim] --current {logs|stop|attach|record [<output>]}"
         return 1
         ;;
     esac
