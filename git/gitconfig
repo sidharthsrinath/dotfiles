@@ -21,6 +21,6 @@
 [include]
     path = ~/.gitconfig.local
 [include]
-    # path = ~/dotfiles/delta.gitconfig
+    # path = ~/dotfiles/git/delta.gitconfig
 [init]
 	defaultBranch = staging

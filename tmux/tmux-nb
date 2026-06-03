@@ -7,7 +7,7 @@
 # the bottom pane at 60% height, focused on the top pane.
 #
 # To customize, edit the WINDOWS array below. Format is "Name:/abs/path".
-# Paths are typically siblings of $NB_ROOT (see ~/dotfiles/nb.sh).
+# Paths are typically siblings of $NB_ROOT (see ~/dotfiles/nb/nb.sh).
 
 set -euo pipefail
 

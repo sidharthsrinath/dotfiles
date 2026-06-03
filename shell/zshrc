@@ -3,10 +3,10 @@
 ### 
 
 # Load the prompt config
-source ~/dotfiles/vcs_info_prompt.zsh >/dev/null
+source ~/dotfiles/shell/vcs_info_prompt.zsh >/dev/null
 
 # Custom commands
-source ~/dotfiles/commands.sh >/dev/null
+source ~/dotfiles/shell/commands.sh >/dev/null
 
 # Load `.claude`
 export CLAUDE_CONFIG_DIR="$HOME/dotfiles/.claude"

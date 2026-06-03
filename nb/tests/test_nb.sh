@@ -3,7 +3,7 @@
 # Unit tests for ../nb.sh.
 #
 # Run with:
-#   ~/dotfiles/tests/test_nb.sh
+#   ~/dotfiles/nb/tests/test_nb.sh
 #
 # Each test runs in the parent shell with HOME pointed at a fresh tempdir and
 # all NB_* env vars unset, so the alias file at ~/.nb_aliases is isolated and

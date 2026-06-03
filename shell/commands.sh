@@ -22,7 +22,7 @@ dotfiles() { cd ~/dotfiles }
 reload-tmux() { tmux source-file ~/.tmux.conf && echo "Reloaded tmux config" }
 
 # Private custom commands
-source ~/dotfiles/private-commands.sh
+source ~/dotfiles/shell/private-commands.sh
 
 
 ### Confirmation
