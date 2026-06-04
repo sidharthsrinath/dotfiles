@@ -1,3 +1,4 @@
+#!/usr/bin/env zsh
 
 # Run this whenever you change `trigger` or `apps`, then reload skhd.
 
@@ -7,11 +8,12 @@ trigger="ctrl + cmd"
 
 typeset -A apps=(
   b 'open -a "Safari"'
+  f 'open -a "Finder"'
   s 'open -a "Slack"'
   x 'open -b com.apple.dt.Xcode'
   t 'open -a "Ghostty"'
   n 'open -a "Notion"'
-  0x1E 'open ~/Documents/Pictures/Screenshots'  # 0x1E = ] on US ANSI; skhd needs hex keycode for punctuation
+  0x1E 'open ~/Documents/Pictures/Screenshots' # 0x1E = ] on US ANSI; skhd needs hex keycode for punctuation
 )
 
 out="${0:A:h}/skhdrc"
@@ -22,7 +24,7 @@ out="${0:A:h}/skhdrc"
   for letter in "${(@k)apps}"; do
     printf '%s - %s : %s\n' "$trigger" "$letter" "${apps[$letter]}"
   done | sort
-} > "$out"
+} >"$out"
 
 echo "Wrote $out"
 

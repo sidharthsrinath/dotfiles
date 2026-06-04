@@ -2,6 +2,7 @@
 
 ctrl + cmd - 0x1E : open ~/Documents/Pictures/Screenshots
 ctrl + cmd - b : open -a "Safari"
+ctrl + cmd - f : open -a "Finder"
 ctrl + cmd - n : open -a "Notion"
 ctrl + cmd - s : open -a "Slack"
 ctrl + cmd - t : open -a "Ghostty"

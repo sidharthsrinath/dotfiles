@@ -4,6 +4,7 @@
 *.local
 private-commands.sh
 tmux/tmux-nb
+nb/
 
 # Claude Code state (sessions, history, telemetry, plugin caches)
 .claude
