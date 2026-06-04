@@ -218,12 +218,24 @@ test_core_tools_installed_via_brew() {
   run_install
   local log
   log="$(stub_log)"
-  assert_contains "brew install tmux"          "$log" "tmux"
-  assert_contains "brew install neovim"        "$log" "neovim"
-  assert_contains "brew install git-lfs"       "$log" "git-lfs"
-  assert_contains "brew install gitmux"        "$log" "gitmux"
-  assert_contains "brew install skhd"          "$log" "skhd"
+  assert_contains "brew install tmux"           "$log" "tmux"
+  assert_contains "brew install neovim"         "$log" "neovim"
+  assert_contains "brew install git-lfs"        "$log" "git-lfs"
+  assert_contains "brew install gitmux"         "$log" "gitmux"
+  assert_contains "brew install skhd"           "$log" "skhd"
   assert_contains "brew install --cask ghostty" "$log" "ghostty"
+}
+
+# skhd requires a third-party tap; verify it's added before skhd is installed.
+test_koekeishiya_tap_added_before_skhd() {
+  run_install
+  local log
+  log="$(stub_log)"
+  assert_contains "brew tap koekeishiya/formulae" "$log" "tap added"
+  local tap_pos skhd_pos
+  tap_pos="$(echo "$log" | grep -n "tap koekeishiya" | cut -d: -f1)"
+  skhd_pos="$(echo "$log" | grep -n "brew install skhd" | cut -d: -f1)"
+  assert_true "$(( tap_pos < skhd_pos ? 0 : 1 ))" "tap precedes skhd install"
 }
 
 # git lfs install is called.
@@ -266,6 +278,7 @@ tests=(
   test_preserves_existing_zshrc_content
   test_private_commands_stub_created
   test_core_tools_installed_via_brew
+  test_koekeishiya_tap_added_before_skhd
   test_git_lfs_initialized
   test_no_network_calls_when_optionals_declined
   test_idempotent_no_bak_files_on_rerun

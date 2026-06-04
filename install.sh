@@ -69,6 +69,7 @@ fi
 # ── core tools ───────────────────────────────────────────────────────────────
 
 info "Installing core tools..."
+brew tap koekeishiya/formulae
 brew_install tmux
 brew_install neovim
 brew_install git-lfs
