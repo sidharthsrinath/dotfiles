@@ -45,7 +45,7 @@ The script will:
 
 3. **skhd** — start the hotkey daemon:
    ```bash
-   brew services start skhd
+   skhd --start-service
    ```
 
 ## Adding a new machine

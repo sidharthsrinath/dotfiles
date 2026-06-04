@@ -1,23 +1,11 @@
 #!/usr/bin/env bash
-#
-# tmux-nb — open (or attach to) the "nb" tmux session with four
-# pre-laid-out windows, one per worktree.
-#
-# Each window uses Layout 1 from ~/.tmux.conf: a vertical split with
-# the bottom pane at 60% height, focused on the top pane.
-#
-# To customize, edit the WINDOWS array below. Format is "Name:/abs/path".
-# Paths are typically siblings of $NB_ROOT (see ~/dotfiles/nb/nb.sh).
-
 set -euo pipefail
 
-SESSION="nb"
+SESSION="2w"
 
 WINDOWS=(
-  "Feature:~/Documents/NB/Notability-Feature"
-  "Review:~/Documents/NB/Notability-Review"
-  "Main:~/Documents/NB/Notability"
-  "Personal:~"
+  "main:~/Documents"
+  "dotfiles:~/dotfiles"
 )
 
 attach() {
@@ -37,11 +25,6 @@ for entry in "${WINDOWS[@]}"; do
   name="${entry%%:*}"
   path="${entry#*:}"
   path="${path/#\~/$HOME}"
-
-  if [[ ! -d "$path" ]]; then
-    echo "tmux-nb: '$name' window points at missing path: $path" >&2
-    exit 1
-  fi
 
   if (( first )); then
     tmux new-session -d -s "$SESSION" -n "$name" -c "$path"
