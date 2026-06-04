@@ -20,10 +20,10 @@ export NVM_DIR="$HOME/.nvm"
 export SDKMAN_DIR="$HOME/.sdkman"
 [[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
 export PATH="$HOME/dotfiles/tmux:$PATH"
-export PATH="/opt/homebrew/opt/zig@0.15/bin:$PATH"
-eval "$(rbenv init - zsh)"
+[[ -d "/opt/homebrew/opt/zig@0.15/bin" ]] && export PATH="/opt/homebrew/opt/zig@0.15/bin:$PATH"
+command -v rbenv &>/dev/null && eval "$(rbenv init - zsh)"
 
 
-[ -f "/Users/sidharth/.ghcup/env" ] && . "/Users/sidharth/.ghcup/env" # ghcup-env
+[ -f "$HOME/.ghcup/env" ] && . "$HOME/.ghcup/env"
 # Created by `pipx` on 2026-05-27 23:32:17
-export PATH="$PATH:/Users/sidharth/.local/bin"
+export PATH="$PATH:$HOME/.local/bin"
