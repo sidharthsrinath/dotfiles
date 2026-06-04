@@ -74,6 +74,7 @@ brew_install tmux
 brew_install neovim
 brew_install git-lfs
 brew_install gitmux
+brew_install tree-sitter
 brew_install skhd
 brew_install --cask ghostty
 
