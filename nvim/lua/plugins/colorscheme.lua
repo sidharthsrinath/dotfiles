@@ -1,13 +1,13 @@
 return {
-    {
-        "ellisonleao/gruvbox.nvim",
-        priority = 1000,
-        opts = { background = "dark" },
+  {
+    "projekt0n/github-nvim-theme",
+    priority = 1000,
+    opts = {},
+  },
+  {
+    "LazyVim/LazyVim",
+    opts = {
+      colorscheme = "github_dark_high_contrast",
     },
-    {
-        "LazyVim/LazyVim",
-        opts = {
-            colorscheme = "gruvbox",
-        },
-    },
+  },
 }
