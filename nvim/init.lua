@@ -28,8 +28,6 @@ require("lazy").setup({
             vim.opt.rtp:prepend(plugin.dir .. "/runtime")
         end,
         config = function()
-            require("nvim-treesitter").install({ "cpp", "c", "lua" })
-
             vim.api.nvim_create_autocmd("FileType", {
                 pattern = { "c", "cpp", "lua" },
                 callback = function(ev)

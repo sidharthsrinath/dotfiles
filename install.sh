@@ -74,7 +74,6 @@ brew_install tmux
 brew_install neovim
 brew_install git-lfs
 brew_install gitmux
-brew_install tree-sitter
 brew_install skhd
 brew_install --cask ghostty
 
@@ -109,9 +108,6 @@ fi
 
 if prompt "Install git-delta (diff viewer)?"; then
   brew_install git-delta
-  # Uncomment delta config in gitconfig
-  sed -i '' 's|# path = ~/dotfiles/git/delta.gitconfig|path = ~/dotfiles/git/delta.gitconfig|' "$DOTFILES/git/gitconfig"
-  success "delta config enabled in gitconfig"
 fi
 
 # ── work tools ───────────────────────────────────────────────────────────────
