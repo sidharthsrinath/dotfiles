@@ -11,8 +11,7 @@ dotfiles/
 ├── tmux/           # tmux config and gitmux status bar
 ├── ghostty/        # Ghostty terminal config
 ├── nvim/           # Neovim config (lazy.nvim)
-├── skhd/           # macOS hotkey daemon
-└── nb/             # nb notes CLI wrapper
+└── skhd/           # macOS hotkey daemon
 ```
 
 ## Install
