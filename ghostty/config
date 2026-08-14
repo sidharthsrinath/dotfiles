@@ -38,38 +38,91 @@ window-save-state = always
 macos-titlebar-style=native
 window-colorspace = "srgb"
 
-## Keybindings - Ghostty
-keybind = cmd+s>r=reload_config
-keybind = cmd+s>x=close_surface
-keybind = cmd+s>n=new_window
+# ==============================================================================
+# KEYBINDS - tmux-style multiplexing
+# ==============================================================================
+# Leader and second keys both mirror ~/dotfiles/tmux/tmux.conf, so the muscle
+# memory carries over unchanged. Ghostty consumes ctrl+space, which means tmux's
+# own prefix will not reach a tmux session running inside Ghostty - see the note
+# at the bottom of this file before re-enabling tmux.
+# Note: Ghostty has no trailing comments - notes must be on their own line.
 
-## Keybindings - Tabs 
-keybind = cmd+s>c=new_tab
-keybind = cmd+s>shift+l=next_tab
-keybind = cmd+s>shift+h=previous_tab
-keybind = cmd+s>comma=move_tab:-1
-keybind = cmd+s>period=move_tab:1
+## Meta
+# tmux: prefix r (source-file), prefix x (kill-pane)
+keybind = ctrl+space>r=reload_config
+keybind = ctrl+space>x=close_surface
+keybind = ctrl+space>shift+n=new_window
+
+## Keybindings - Tabs (tmux windows)
+# tmux: prefix c (new), n/p (next/prev), & (kill), comma (rename)
+keybind = ctrl+space>c=new_tab
+keybind = ctrl+space>n=next_tab
+keybind = ctrl+space>p=previous_tab
+keybind = ctrl+space>shift+l=next_tab
+keybind = ctrl+space>shift+h=previous_tab
+keybind = ctrl+space>&=close_tab
+keybind = ctrl+space>,=prompt_tab_title
+keybind = ctrl+space>shift+comma=move_tab:-1
+keybind = ctrl+space>shift+period=move_tab:1
 
 ## Keybindings - Tab Switch
-keybind = cmd+s>1=goto_tab:1
-keybind = cmd+s>2=goto_tab:2
-keybind = cmd+s>3=goto_tab:3
-keybind = cmd+s>4=goto_tab:4
-keybind = cmd+s>5=goto_tab:5
-keybind = cmd+s>6=goto_tab:6
-keybind = cmd+s>7=goto_tab:7
-keybind = cmd+s>8=goto_tab:8
-keybind = cmd+s>9=goto_tab:9
+keybind = ctrl+space>1=goto_tab:1
+keybind = ctrl+space>2=goto_tab:2
+keybind = ctrl+space>3=goto_tab:3
+keybind = ctrl+space>4=goto_tab:4
+keybind = ctrl+space>5=goto_tab:5
+keybind = ctrl+space>6=goto_tab:6
+keybind = ctrl+space>7=goto_tab:7
+keybind = ctrl+space>8=goto_tab:8
+keybind = ctrl+space>9=goto_tab:9
 
-## Keybindings - Split Screen
-keybind = cmd+s>\=new_split:right
-keybind = cmd+s>-=new_split:down
-keybind = cmd+s>j=goto_split:bottom
-keybind = cmd+s>k=goto_split:top
-keybind = cmd+s>h=goto_split:left
-keybind = cmd+s>l=goto_split:right
-keybind = cmd+s>z=toggle_split_zoom
-keybind = cmd+s>e=equalize_splits
+## Keybindings - Splits (tmux panes)
+# Primary bindings use vim's mnemonics - v is :vsplit (new pane to the right),
+# s is :split (new pane stacked below).
+# These replaced tmux's " and %, which silently never fired: Ghostty matches the
+# physical key plus modifiers, so the shifted CHARACTER never matches. Writing
+# them would mean shift+apostrophe and shift+5, not " and %. Letter keys sidestep
+# the whole problem - see the same trap on shift+comma/shift+period above.
+keybind = ctrl+space>v=new_split:right
+keybind = ctrl+space>s=new_split:down
+# Unshifted aliases for the same two actions
+keybind = ctrl+space>\=new_split:right
+keybind = ctrl+space>-=new_split:down
+# tmux: prefix o (next pane), prefix ; (last pane), prefix z (zoom)
+keybind = ctrl+space>j=goto_split:bottom
+keybind = ctrl+space>k=goto_split:top
+keybind = ctrl+space>h=goto_split:left
+keybind = ctrl+space>l=goto_split:right
+keybind = ctrl+space>o=goto_split:next
+keybind = ctrl+space>;=goto_split:previous
+keybind = ctrl+space>z=toggle_split_zoom
+keybind = ctrl+space>e=equalize_splits
+
+## Keybindings - Split resize
+keybind = ctrl+space>ctrl+h=resize_split:left,10
+keybind = ctrl+space>ctrl+j=resize_split:down,10
+keybind = ctrl+space>ctrl+k=resize_split:up,10
+keybind = ctrl+space>ctrl+l=resize_split:right,10
+keybind = ctrl+space>ctrl+left=resize_split:left,10
+keybind = ctrl+space>ctrl+down=resize_split:down,10
+keybind = ctrl+space>ctrl+up=resize_split:up,10
+keybind = ctrl+space>ctrl+right=resize_split:right,10
+
+## Keybindings - Prefix-free pane nav
+# tmux: bind -n M-Arrow select-pane
+keybind = alt+left=goto_split:left
+keybind = alt+right=goto_split:right
+keybind = alt+up=goto_split:top
+keybind = alt+down=goto_split:bottom
+
+## Keybindings - Scrollback (nearest thing to tmux copy-mode)
+keybind = ctrl+space>[=scroll_page_up
+keybind = ctrl+space>]=scroll_page_down
+keybind = ctrl+space>g=scroll_to_top
+keybind = ctrl+space>shift+g=scroll_to_bottom
+# Jump by shell prompt - needs shell integration, which you already have
+keybind = ctrl+space>up=jump_to_prompt:-1
+keybind = ctrl+space>down=jump_to_prompt:1
 
 # other
 copy-on-select = clipboard
@@ -77,5 +130,9 @@ copy-on-select = clipboard
 # Send a distinct sequence for Shift+Enter so apps (e.g. Claude Code) can treat it as newline.
 keybind = shift+enter=text:\n
 
-# Send a distinct CSI-u sequence for Shift+Space so tmux can use it as a prefix.
-keybind = shift+space=text:\x1b[32;2u
+# TMUX DECOUPLED (temporary) - Ghostty now handles multiplexing natively via the
+# ctrl+space leader above. This fed tmux a Shift+Space prefix via CSI-u.
+# tmux/tmux.conf is otherwise untouched. To hand multiplexing back to tmux:
+#   1. uncomment the line below, and
+#   2. change the leader above off ctrl+space (it now shadows tmux's own prefix).
+# keybind = shift+space=text:\x1b[32;2u
